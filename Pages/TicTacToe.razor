@@ -1,0 +1,79 @@
+@page "/tictactoe"
+@using TicTacWhoa.Services
+@inject GameLogic GameLogic
+
+<h3>Tic Tac Toe</h3>
+
+@if (GameLogic.GameOver)
+{
+    var message = GameLogic.Winner.HasValue ? $"{GameLogic.Winner} Wins!" : "Draw!";
+    <div class="alert alert-info">
+        @message <button class="btn btn-primary" @onclick="RestartGame">Play Again</button>
+    </div>
+}
+
+<div class="board">
+    @for (int i = 0; i < 9; i++)
+    {
+        var localIndex = i;
+        <div class="cell" @onclick="() => MakeMove(localIndex)">
+            @GetPlayerSymbol(GameLogic.Board[i])
+        </div>
+    }
+</div>
+
+<style>
+    .board {
+        display: grid;
+        grid-template-columns: repeat(3, 100px);
+        grid-template-rows: repeat(3, 100px);
+        gap: 5px;
+    }
+    .cell {
+        width: 100px;
+        height: 100px;
+        background-color: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2em;
+        cursor: pointer;
+        border: 1px solid #ccc;
+    }
+    .cell:hover {
+        background-color: #e0e0e0;
+    }
+</style>
+
+@code {
+    protected override void OnInitialized()
+    {
+        GameLogic.OnStateChanged += StateHasChanged;
+        GameLogic.NewGame();
+    }
+
+    private void MakeMove(int index)
+    {
+        GameLogic.MakeMove(index);
+    }
+
+    private void RestartGame()
+    {
+        GameLogic.NewGame();
+    }
+
+    private string GetPlayerSymbol(GameLogic.Player player)
+    {
+        return player switch
+        {
+            GameLogic.Player.X => "X",
+            GameLogic.Player.O => "O",
+            _ => ""
+        };
+    }
+
+    public void Dispose()
+    {
+        GameLogic.OnStateChanged -= StateHasChanged;
+    }
+}
