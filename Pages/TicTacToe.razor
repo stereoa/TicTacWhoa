@@ -3,7 +3,9 @@
 @inject GameLogic GameLogic
 @inject IJSRuntime JSRuntime
 
-<h3>Level @GameLogic.CurrentLevelNumber - @GameLogic.CurrentLevelConfig.Rule</h3>
+<h3 class="text-center">
+    Level @GameLogic.CurrentLevelNumber - @GameLogic.CurrentLevelConfig.Name
+</h3>
 
 <div class="game-info">
     <div class="status-bar">
