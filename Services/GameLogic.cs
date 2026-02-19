@@ -162,7 +162,13 @@ namespace TicTacWhoa.Services
 
         public async Task MakeMove(int index)
         {
-            if (GameOver || index < 0 || index >= Board.Length) return;
+            if (GameOver || !CurrentPlayer.IsHuman) return;
+            await ExecuteMove(index);
+        }
+
+        private async Task ExecuteMove(int index)
+        {
+            if (index < 0 || index >= Board.Length) return;
 
             int targetIndex = index;
 
@@ -232,13 +238,14 @@ namespace TicTacWhoa.Services
         {
             if (CurrentPlayer.IsHuman) return;
 
+            int capturingPlayerIndex = CurrentPlayerIndex;
             var config = CurrentPlayer.Config;
             int delay = config?.MoveDelayMs ?? 1000;
 
             // Simulate thinking
             await Task.Delay(delay);
 
-            if (GameOver) return;
+            if (GameOver || CurrentPlayerIndex != capturingPlayerIndex) return;
 
             // Timeout Chance
             if (config != null && config.TimeoutChance > 0)
@@ -278,7 +285,7 @@ namespace TicTacWhoa.Services
             {
                 var random = new Random();
                 int moveIndex = availableMoves[random.Next(availableMoves.Count)];
-                await MakeMove(moveIndex);
+                await ExecuteMove(moveIndex);
             }
             else
             {

@@ -6,6 +6,12 @@
     margin-top: 20px;
     justify-content: center;
     /* Center the board */
+    transition: opacity 0.3s ease;
+}
+
+.board.disabled {
+    opacity: 0.6;
+    pointer-events: none;
 }
 
 .cell {

@@ -32,7 +32,8 @@
     </div>
 }
 
-<div class="board" style="--grid-size: @GameLogic.CurrentLevelConfig.GridSize">
+<div class="board @(!GameLogic.CurrentPlayer.IsHuman || GameLogic.GameOver ? "disabled" : "")"
+    style="--grid-size: @GameLogic.CurrentLevelConfig.GridSize">
     @for (int i = 0; i < GameLogic.Board.Length; i++)
     {
         var localIndex = i;
