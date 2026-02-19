@@ -19,6 +19,7 @@ namespace TicTacWhoa.Services
             _levels.Add(1, new LevelConfig
             {
                 LevelNumber = 1,
+                Name = "Plain 'Ol Tic Tac Toe",
                 GridSize = 3,
                 WinConditionLength = 3,
                 Opponents = new List<OpponentConfig>
@@ -31,6 +32,7 @@ namespace TicTacWhoa.Services
             _levels.Add(2, new LevelConfig
             {
                 LevelNumber = 2,
+                Name = "Let's Go!",
                 GridSize = 3,
                 WinConditionLength = 3,
                 TurnTimeLimit = TimeSpan.FromSeconds(3),
@@ -40,12 +42,13 @@ namespace TicTacWhoa.Services
                 }
             });
 
-            // Level 3: 4x4, 2 Opponents
+            // Level 3: 2 Opponents
             _levels.Add(3, new LevelConfig
             {
                 LevelNumber = 3,
-                GridSize = 4,
-                WinConditionLength = 4,
+                Name = "Three's Company",
+                GridSize = 3,
+                WinConditionLength = 3,
                 Opponents = new List<OpponentConfig>
                 {
                     new OpponentConfig { Name = "Bot A", Symbol = "O" },
@@ -57,7 +60,8 @@ namespace TicTacWhoa.Services
             _levels.Add(4, new LevelConfig
             {
                 LevelNumber = 4,
-                GridSize = 3, // Or 4? Let's stick to 3 for simplicity first, or 4 for better gravity feel. Let's do 4x4 for gravity.
+                Name = "Connect 4?",
+                GridSize = 4,
                 WinConditionLength = 4,
                 Rule = SpecialRule.Gravity,
                 Opponents = new List<OpponentConfig>
@@ -70,6 +74,7 @@ namespace TicTacWhoa.Services
             _levels.Add(5, new LevelConfig
             {
                 LevelNumber = 5,
+                Name = "Guess Who?",
                 GridSize = 3,
                 WinConditionLength = 3,
                 Rule = SpecialRule.DisappearingPieces,
@@ -83,6 +88,7 @@ namespace TicTacWhoa.Services
             _levels.Add(6, new LevelConfig
             {
                 LevelNumber = 6,
+                Name = "The Gauntlet",
                 GridSize = 5,
                 WinConditionLength = 5, // Or 4? 5 is hard. Let's do 5.
                 TurnTimeLimit = TimeSpan.FromSeconds(5),

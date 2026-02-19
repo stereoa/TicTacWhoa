@@ -13,6 +13,7 @@ namespace TicTacWhoa.Models
     public class LevelConfig
     {
         public int LevelNumber { get; set; }
+        public string Name { get; set; } = "Unnamed";
         public int GridSize { get; set; } = 3;
         public int WinConditionLength { get; set; } = 3;
         public TimeSpan? TurnTimeLimit { get; set; }
