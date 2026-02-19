@@ -1,79 +1,104 @@
 @page "/tictactoe"
 @using TicTacWhoa.Services
 @inject GameLogic GameLogic
+@inject IJSRuntime JSRuntime
 
-<h3>Tic Tac Toe</h3>
+<h3>Level @GameLogic.CurrentLevelNumber - @GameLogic.CurrentLevelConfig.Rule</h3>
+
+<div class="game-info">
+    <div class="status-bar">
+        <span>Turn: @GameLogic.CurrentPlayer.Name (@GameLogic.CurrentPlayer.Symbol)</span>
+        @if (GameLogic.CurrentLevelConfig.TurnTimeLimit.HasValue)
+        {
+            <span class="timer @(GameLogic.TimeRemaining < 1 ? "danger" : "")">
+                Time: @GameLogic.TimeRemaining.ToString("0.0")s
+            </span>
+        }
+    </div>
+</div>
 
 @if (GameLogic.GameOver)
 {
-    var message = GameLogic.Winner.HasValue ? $"{GameLogic.Winner} Wins!" : "Draw!";
-    <div class="alert alert-info">
-        @message <button class="btn btn-primary" @onclick="RestartGame">Play Again</button>
+    var message = !string.IsNullOrEmpty(GameLogic.GameOverReason) ? GameLogic.GameOverReason : (GameLogic.Winner != null ?
+    $"{GameLogic.Winner.Name} Wins!" : "Draw!");
+    <div class="alert alert-info winner-container">
+        @message
+        @if (GameLogic.Winner?.IsHuman == true)
+        {
+            <button class="btn btn-success" @onclick="NextLevel">Next Level</button>
+        }
+        else
+        {
+            <button class="btn btn-primary" @onclick="RestartGame">Try Again</button>
+        }
     </div>
 }
 
-<div class="board">
-    @for (int i = 0; i < 9; i++)
+<div class="board" style="--grid-size: @GameLogic.CurrentLevelConfig.GridSize">
+    @for (int i = 0; i < GameLogic.Board.Length; i++)
     {
         var localIndex = i;
-        <div class="cell" @onclick="() => MakeMove(localIndex)">
+        var isFilled = GameLogic.Board[i] != -1;
+        <div class="cell @(isFilled ? "filled" : "")" @onclick="() => MakeMove(localIndex)">
             @GetPlayerSymbol(GameLogic.Board[i])
         </div>
     }
 </div>
 
-<style>
-    .board {
-        display: grid;
-        grid-template-columns: repeat(3, 100px);
-        grid-template-rows: repeat(3, 100px);
-        gap: 5px;
-    }
-    .cell {
-        width: 100px;
-        height: 100px;
-        background-color: #f0f0f0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2em;
-        cursor: pointer;
-        border: 1px solid #ccc;
-    }
-    .cell:hover {
-        background-color: #e0e0e0;
-    }
-</style>
-
 @code {
+    private bool _confettiPlayed;
+
     protected override void OnInitialized()
     {
-        GameLogic.OnStateChanged += StateHasChanged;
+        GameLogic.OnStateChanged += HandleStateChange;
         GameLogic.NewGame();
     }
 
-    private void MakeMove(int index)
+    private void HandleStateChange()
     {
-        GameLogic.MakeMove(index);
+        if (!GameLogic.GameOver)
+        {
+            _confettiPlayed = false;
+        }
+
+        if (GameLogic.GameOver && GameLogic.Winner?.IsHuman == true && !_confettiPlayed)
+        {
+            _confettiPlayed = true;
+            _ = JSRuntime.InvokeVoidAsync("startConfetti");
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task MakeMove(int index)
+    {
+        await GameLogic.MakeMove(index);
     }
 
     private void RestartGame()
     {
+        _confettiPlayed = false;
         GameLogic.NewGame();
     }
 
-    private string GetPlayerSymbol(GameLogic.Player player)
+    private void NextLevel()
     {
-        return player switch
+        _confettiPlayed = false;
+        GameLogic.NewGame(GameLogic.CurrentLevelNumber + 1);
+    }
+
+    private string GetPlayerSymbol(int playerIndex)
+    {
+        if (playerIndex == -1) return "";
+        if (playerIndex >= 0 && playerIndex < GameLogic.Players.Length)
         {
-            GameLogic.Player.X => "X",
-            GameLogic.Player.O => "O",
-            _ => ""
-        };
+            return GameLogic.Players[playerIndex].Symbol;
+        }
+        return "?";
     }
 
     public void Dispose()
     {
-        GameLogic.OnStateChanged -= StateHasChanged;
+        GameLogic.OnStateChanged -= HandleStateChange;
     }
 }
