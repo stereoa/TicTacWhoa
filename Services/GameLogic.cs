@@ -334,7 +334,7 @@ namespace TicTacWhoa.Services
                         if (win)
                         {
                             Winner = Players[currentPlayer];
-                            GameOverReason = $"{Winner.Name} Wins!";
+                            GameOverReason = $"{Winner.Name} Win!";
                             _turnTimer?.Stop();
                             return;
                         }

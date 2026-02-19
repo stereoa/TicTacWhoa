@@ -19,10 +19,8 @@
 
 @if (GameLogic.GameOver)
 {
-    var message = !string.IsNullOrEmpty(GameLogic.GameOverReason) ? GameLogic.GameOverReason : (GameLogic.Winner != null ?
-    $"{GameLogic.Winner.Name} Wins!" : "Draw!");
     <div class="alert alert-info winner-container">
-        @message
+        <p>@GameLogic.GameOverReason</p>
         @if (GameLogic.Winner?.IsHuman == true)
         {
             <button class="btn btn-success" @onclick="NextLevel">Next Level</button>
